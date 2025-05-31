@@ -29,6 +29,24 @@ function preload() {
     inspirationChanged(allInspirations[dropper.value]);
 }
 
+imageInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    let img = loadImage(event.target.result, loadedImg => {
+      let customInspiration = {
+        name: "Custom Image",
+        image: loadedImg,
+        assetUrl: event.target.result
+      };
+      inspirationChanged(customInspiration);
+    });
+  };
+  reader.readAsDataURL(file);
+};
+
 function inspirationChanged(nextInspiration) {
   currentInspiration = nextInspiration;
   currentDesign = undefined;
