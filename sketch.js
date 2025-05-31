@@ -54,7 +54,16 @@ function inspirationChanged(nextInspiration) {
   setup();
 }
 
+checkText.onclick = () => {
+  let guess = textInput.value.trim().toLowerCase();
+  let actual = currentInspiration.name.trim().toLowerCase();
 
+  if (guess === actual) {
+    textResult.innerText = "Correct!";
+  } else {
+    textResult.innerText = `Wrong! Try again.`;
+  }
+};
 
 function setup() {
   currentCanvas = createCanvas(width, height);
