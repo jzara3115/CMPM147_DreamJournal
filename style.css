@@ -1,17 +1,18 @@
+/* Base body styling */
 body {
   font-family: 'Quicksand', sans-serif;
   background: linear-gradient(
     to bottom,
-    #2D2A5E,  
-    #6C77D1, 
-    #9B75E3  
+    #2D2A5E,
+    #6C77D1,
+    #9B75E3
   );
   color: #FFFFFF;
   padding: 30px;
   min-height: 100vh;
 }
 
-/* input fields and textarea */
+/* Input fields and textarea */
 textarea,
 input[type="file"],
 select {
@@ -25,7 +26,7 @@ select {
   margin-bottom: 12px;
 }
 
-/* slider style */
+/* Slider styling */
 input[type="range"] {
   width: 100%;
   max-width: 300px;
@@ -33,7 +34,7 @@ input[type="range"] {
   margin-bottom: 12px;
 }
 
-/* button style */
+/* General button styling */
 button {
   background-color: #C084B7;
   color: white;
@@ -50,14 +51,70 @@ button:hover {
   background-color: #A966AB;
 }
 
-/* paragraphs & spacing */
+/* Paragraph spacing */
 p {
   margin-top: 16px;
   margin-bottom: 8px;
 }
 
-/* important dynamic data */
-#rate, #activeScore, #bestScore, #fpsCounter {
+/* Highlighted dynamic data */
+#rate,
+#activeScore,
+#bestScore,
+#fpsCounter {
   font-weight: bold;
   color: #7FDEFF;
+}
+
+/* Side panel container for mood panel and regenerate button */
+#sidePanel {
+  position: absolute;
+  top: 10px;
+}
+
+/* Mood control panel box */
+#moodPanel {
+  background-color: #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* Mood panel header */
+#moodPanel h3 {
+  margin: 0 0 10px 0;
+}
+
+/* Container for mood buttons */
+#moodButtonsContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Individual mood buttons */
+.mood-button {
+  font-size: 24px;
+  margin: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+/* Selected mood button state */
+.mood-button.selected {
+  background-color: #aee;
+  font-weight: bold;
+  border: 2px solid #0099cc;
+}
+
+/* Regenerate button below mood panel */
+#regenerateButton {
+  margin-top: 10px;
+  width: 180px;
+  cursor: pointer;
 }
