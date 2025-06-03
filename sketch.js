@@ -84,6 +84,21 @@ function draw() {
 }
 
 function getBackgroundColor() {
+  if (detectedColor) {
+    // Make the background lighter based on mood
+    let blendAmt;
+    if (mood === 'happy') {
+      blendAmt = 0.7;
+    } else if (mood === 'neutral') {
+      blendAmt = 0.4;
+    } else {
+      blendAmt = 0.1;
+    }
+    let r = lerp(detectedColor[0], 255, blendAmt);
+    let g = lerp(detectedColor[1], 255, blendAmt);
+    let b = lerp(detectedColor[2], 255, blendAmt);
+    return color(r, g, b);
+  }
   if (mood === 'happy') {
     return color(random(220, 255), random(220, 255), random(180, 255));
   } else if (mood === 'neutral') {
@@ -205,27 +220,81 @@ function drawLines() {
   }
 }
 
+//INPUT HANDLING
+let detectedColor = null;
+let detectedColorName = '';
+let dreamInputElem, detectedColorDiv;
+
+//Basic color words and RGB values
+const COLORS = {
+  red: [255, 0, 0],
+  blue: [0, 0, 255],
+  green: [0, 128, 0],
+  yellow: [255, 255, 0],
+  orange: [255, 165, 0],
+  purple: [128, 0, 128],
+  pink: [255, 105, 180],
+  brown: [139, 69, 19],
+  black: [0, 0, 0],
+  white: [255, 255, 255],
+  gray: [128, 128, 128],
+  grey: [128, 128, 128],
+};
+
+// Create the input area for dream description
 function createDreamInput(parentDiv) {
   const inputContainer = createDiv().style('margin-top', '20px');
   inputContainer.parent(parentDiv);
-  
+
   createElement('label', 'Describe your dream:')
     .attribute('for', 'textInput')
     .parent(parentDiv);
 
-  const dreamInput = createElement('textarea')
+  dreamInputElem = createElement('textarea')
     .attribute('id', 'textInput')
     .attribute('placeholder', 'Write your dream here...')
     .attribute('rows', '4')
     .attribute('cols', '30');
-  dreamInput.parent(parentDiv);
+  dreamInputElem.parent(parentDiv);
+
+  detectedColorDiv = createDiv('').style('margin-top', '8px');
+  detectedColorDiv.parent(parentDiv);
+
+  dreamInputElem.elt.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleDreamInput(dreamInputElem.value());
+    }
+  });
+}
+
+//handle the dream input and detect colors
+function handleDreamInput(text) {
+  detectedColor = null;
+  detectedColorName = '';
+
+  const lower = text.toLowerCase();
+  for (let colorName in COLORS) {
+    if (lower.includes(colorName)) {
+      detectedColor = COLORS[colorName];
+      detectedColorName = colorName;
+      break;
+    }
+  }
+
+  if (detectedColor) {
+    detectedColorDiv.html(
+      `Detected color: <span style="color:rgb(${detectedColor.join(',')});font-weight:bold">${detectedColorName}</span>`
+    );
+  } else {
+    detectedColorDiv.html('No color detected.');
+  }
+  redraw();
 }
 
 function drawInputImage() {
   if (loadedImg) {
     push();
-    tint(255, 127); // draw the image at half opacity
-    // stretch the image to fit the canvas
     image(loadedImg, 0, 0, 800, 600);
     pop();
   }
