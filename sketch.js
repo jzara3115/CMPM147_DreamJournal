@@ -32,16 +32,7 @@ function setup() {
 
   highlightSelectedButton(mood);
 
-  createElement('label', 'Describe your dream:')
-    .attribute('for', 'textInput')
-    .parent(sidePanel);
-
-  const dreamInput = createElement('textarea')
-    .attribute('id', 'textInput')
-    .attribute('placeholder', 'Write your dream here...')
-    .attribute('rows', '4')
-    .attribute('cols', '30');
-  dreamInput.parent(sidePanel);
+  createDreamInput(sidePanel);
 }
 
 function createMoodButton(label, moodValue, parentDiv) {
@@ -209,4 +200,17 @@ function drawLines() {
       endShape();
     }
   }
+}
+
+function createDreamInput(parentDiv) {
+  createElement('label', 'Describe your dream:')
+    .attribute('for', 'textInput')
+    .parent(parentDiv);
+
+  const dreamInput = createElement('textarea')
+    .attribute('id', 'textInput')
+    .attribute('placeholder', 'Write your dream here...')
+    .attribute('rows', '4')
+    .attribute('cols', '30');
+  dreamInput.parent(parentDiv);
 }
