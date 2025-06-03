@@ -3,15 +3,93 @@
   <head>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.7/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.7/lib/addons/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+      }
 
+      #pageTitle {
+        margin: 20px;
+      }
+
+      #titleDivider {
+        margin: 0 20px 20px 20px;
+      }
+
+      #content {
+        display: flex;
+        flex-direction: row;
+        padding: 0 20px;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      #leftColumn {
+        flex-grow: 1;
+      }
+
+      #moodPanel,
+      #dreamInputContainer {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      #rightColumn {
+        width: 300px;
+        background-color: #f5f5f500;
+        padding: 70px;
+        border: 1px solid #cccccc00;
+        border-radius: 6px;
+      }
+
+      #moodButtonsContainer {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .mood-button {
+        font-size: 24px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+
+      canvas {
+        display: block;
+        margin-top: 20px;
+      }
+
+      #imageInput {
+        margin-top: 20px;
+      }
+    </style>
   </head>
   <body>
-    <main>
-      <input type="file" id="imageInput" accept="image/*" style="margin: 20px 0 10px 20px;" />
-    </main>
+    <h1 id="pageTitle">Dreamscape Journal</h1>
+    <hr id="titleDivider" />
+
+    <div id="content">
+      <!-- LEFT SIDE -->
+      <div id="leftColumn">
+        <input type="file" id="imageInput" accept="image/*" hidden />
+        <label for="imageInput" class="custom-file-button">Upload Image</label>
+        <div id="container"></div>
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div id="rightColumn">
+        <div id="moodPanel">
+          <h3>Select the mood:</h3>
+          <div id="moodButtonsContainer"></div>
+        </div>
+        <button id="regenerateButton">Regenerate</button>
+        <div id="dreamInputContainer"></div>
+      </div>
+    </div>
+
     <script src="sketch.js"></script>
   </body>
 </html>
-

@@ -4,48 +4,31 @@ let moodButtons = [];
 let loadedImg = null;
 
 function setup() {
-  createCanvas(800, 600);
+  const canvas = createCanvas(800, 600);
+  canvas.parent('container');
   noLoop();
 
-  const panelOffsetX = 80; // move right
-  const panelOffsetY = 40; // move down
-
-  const panelLeft = width + panelOffsetX;
-  const panelTop = panelOffsetY;
-
-  const sidePanel = createDiv().id('sidePanel');
-  sidePanel.position(panelLeft, panelTop);
-
-  // Mood control panel inside sidePanel
-  const moodPanel = createDiv().id('moodPanel').parent(sidePanel);
-  createElement('h3', 'Select the mood:').parent(moodPanel);
-  const btnRow = createDiv().id('moodButtonsContainer').parent(moodPanel);
-
+  const btnRow = select('#moodButtonsContainer');
   createMoodButton('😊', 'happy', btnRow);
   createMoodButton('😐', 'neutral', btnRow);
   createMoodButton('😠', 'bad', btnRow);
 
-  // Regenerate button inside sidePanel
-  regenerateButton = createButton('Regenerate');
-  regenerateButton.id('regenerateButton');
-  regenerateButton.parent(sidePanel); // add to same container
+  regenerateButton = select('#regenerateButton');
   regenerateButton.mousePressed(redraw);
 
   highlightSelectedButton(mood);
 
-  createDreamInput(sidePanel);
+  createDreamInput(select('#dreamInputContainer'));
 }
 
 function createMoodButton(label, moodValue, parentDiv) {
   const btn = createButton(label);
-  btn.class('mood-button'); // add class for shared styling
-
+  btn.class('mood-button');
   btn.mousePressed(() => {
     mood = moodValue;
     highlightSelectedButton(moodValue);
     redraw();
   });
-
   btn.parent(parentDiv);
   moodButtons.push({ mood: moodValue, button: btn });
 }

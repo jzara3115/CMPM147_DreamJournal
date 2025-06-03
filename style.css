@@ -26,6 +26,17 @@ select {
   margin-bottom: 12px;
 }
 
+#rightColumn {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+::placeholder {
+  color: white;
+  opacity: 1; /* Ensure full opacity across browsers */
+}
+
 /* Slider styling */
 input[type="range"] {
   width: 100%;
@@ -66,19 +77,24 @@ p {
   color: #7FDEFF;
 }
 
-/* Side panel container for mood panel and regenerate button */
-#sidePanel {
-  position: absolute;
-  top: 10px;
+#pageTitle {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 48px;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  letter-spacing: 2px;
 }
 
 /* Mood control panel box */
 #moodPanel {
-  background-color: #ccc;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid #C084B7;
   padding: 15px;
   border-radius: 10px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  font-family: sans-serif;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  font-family: 'Quicksand', sans-serif;
   text-align: center;
 }
 
@@ -92,6 +108,7 @@ p {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  background-color: rgba(255, 255, 255, 0);
 }
 
 /* Individual mood buttons */
@@ -101,13 +118,13 @@ p {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #aaa;
-  background-color: #f0f0f0;
+  background-color: #f0f0f000;
   cursor: pointer;
 }
 
 /* Selected mood button state */
 .mood-button.selected {
-  background-color: #aee;
+  background-color: rgba(170, 238, 238, 0.322);
   font-weight: bold;
   border: 2px solid #0099cc;
 }
@@ -117,4 +134,22 @@ p {
   margin-top: 10px;
   width: 180px;
   cursor: pointer;
+}
+
+.custom-file-button {
+  display: inline-block;
+  background-color: #C084B7;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.custom-file-button:hover {
+  background-color: #A966AB;
 }
