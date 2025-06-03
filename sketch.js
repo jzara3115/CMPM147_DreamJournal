@@ -31,6 +31,21 @@ function setup() {
   regenerateButton.mousePressed(redraw);
 
   highlightSelectedButton(mood);
+
+  // Dream input label and textarea
+  const inputLabel = createElement('label', 'Describe your dream:');
+  inputLabel.attribute('for', 'dreamInput');
+  inputLabel.parent(sidePanel);
+  inputLabel.style('display', 'block'); // puts label above the box
+
+  const dreamBox = createElement('textarea');
+  dreamBox.id('dreamInput');
+  dreamBox.attribute('placeholder', 'Write your dream here...');
+  dreamBox.attribute('rows', '4');
+  dreamBox.attribute('cols', '30');
+  dreamBox.parent(sidePanel);
+  dreamBox.style('display', 'block');
+  dreamBox.style('margin-top', '4px');
 }
 
 function createMoodButton(label, moodValue, parentDiv) {
