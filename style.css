@@ -1,0 +1,63 @@
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(
+    to bottom,
+    #2D2A5E,  
+    #6C77D1, 
+    #9B75E3  
+  );
+  color: #FFFFFF;
+  padding: 30px;
+  min-height: 100vh;
+}
+
+/* input fields and textarea */
+textarea,
+input[type="file"],
+select {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  border: 1px solid #C084B7;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 12px;
+}
+
+/* slider style */
+input[type="range"] {
+  width: 100%;
+  max-width: 300px;
+  accent-color: #A966AB;
+  margin-bottom: 12px;
+}
+
+/* button style */
+button {
+  background-color: #C084B7;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 12px;
+}
+
+button:hover {
+  background-color: #A966AB;
+}
+
+/* paragraphs & spacing */
+p {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+/* important dynamic data */
+#rate, #activeScore, #bestScore, #fpsCounter {
+  font-weight: bold;
+  color: #7FDEFF;
+}
