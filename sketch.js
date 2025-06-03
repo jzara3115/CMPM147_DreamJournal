@@ -1,6 +1,7 @@
 let mood = 'neutral';
 let regenerateButton;
 let moodButtons = [];
+let loadedImg = null;
 
 function setup() {
   createCanvas(800, 600);
@@ -61,6 +62,7 @@ function highlightSelectedButton(selectedMood) {
   }
 }
 
+
 function draw() {
   background(getBackgroundColor());
 
@@ -78,6 +80,7 @@ function draw() {
   }
 
   drawLines();
+  drawInputImage();
 }
 
 function getBackgroundColor() {
@@ -217,3 +220,28 @@ function createDreamInput(parentDiv) {
     .attribute('cols', '30');
   dreamInput.parent(parentDiv);
 }
+
+function drawInputImage() {
+  if (loadedImg) {
+    push();
+    tint(255, 127); // draw the image at half opacity
+    // stretch the image to fit the canvas
+    image(loadedImg, 0, 0, 800, 600);
+    pop();
+  }
+}
+
+imageInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    loadedImg = loadImage(event.target.result, () => {
+      drawInputImage()
+    });
+  };
+  reader.readAsDataURL(file);
+};
