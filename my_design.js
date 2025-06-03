@@ -5,15 +5,15 @@ function getInspirations() {
   return [
     {
       name: "The Beatles", 
-      assetUrl: "https://cdn.glitch.global/69694c29-85cb-40ea-93cf-4da0884bb9bb/566fc181-c04f-44f8-8a88-951de4fd1fd6.image.png?v=1746943445762",
+      assetUrl: "assets/the_beatles.png",
     },
     {
       name: "Limbo", 
-      assetUrl: "https://cdn.glitch.global/69694c29-85cb-40ea-93cf-4da0884bb9bb/45d3ef9c-35d2-4d33-97b0-3ce2a524914c.image.png?v=1746943895693",
+      assetUrl: "assets/limbo.png",
     },
     {
       name: "Beware of the Dog", 
-      assetUrl: "https://cdn.glitch.global/69694c29-85cb-40ea-93cf-4da0884bb9bb/1080px-Cave_canem_MAN_Napoli_Inv110666.jpg?v=1746941120856",
+      assetUrl: "assets/beware_of_dog.jpg",
     },
   ];
 }
