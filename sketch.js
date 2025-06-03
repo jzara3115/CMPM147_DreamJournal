@@ -33,6 +33,7 @@ function setup() {
   highlightSelectedButton(mood);
 
   createDreamInput(sidePanel);
+  createImageUpload(sidePanel);
 }
 
 function createMoodButton(label, moodValue, parentDiv) {
@@ -203,6 +204,9 @@ function drawLines() {
 }
 
 function createDreamInput(parentDiv) {
+  const inputContainer = createDiv().style('margin-top', '20px');
+  inputContainer.parent(parentDiv);
+  
   createElement('label', 'Describe your dream:')
     .attribute('for', 'textInput')
     .parent(parentDiv);
@@ -213,4 +217,17 @@ function createDreamInput(parentDiv) {
     .attribute('rows', '4')
     .attribute('cols', '30');
   dreamInput.parent(parentDiv);
+}
+
+function createImageUpload(parentDiv) {
+  const uploadContainer = createDiv().style('margin-top', '20px');
+  uploadContainer.parent(parentDiv);
+
+  createElement('label', 'Upload an image:')
+    .attribute('for', 'imageUpload')
+    .parent(uploadContainer);
+
+  const uploadInput = createFileInput(handleFile);
+  uploadInput.id('imageUpload');
+  uploadInput.parent(uploadContainer);
 }
