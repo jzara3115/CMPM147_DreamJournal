@@ -2,6 +2,13 @@ let mood = 'neutral';
 let regenerateButton;
 let moodButtons = [];
 let loadedImg = null;
+let sleepSlider;
+
+let design = {
+  shapes: []
+};
+
+const MUTATION_RATE = 10;
 let settingInputElem;
 
 const PEXELS_API_KEY = "1RC2LuPyLVVGphETNysf8XQWKo5iGWGaSo7CwMcXkFyrcaRhe7GmyvP9";
@@ -9,19 +16,24 @@ const PEXELS_API_KEY = "1RC2LuPyLVVGphETNysf8XQWKo5iGWGaSo7CwMcXkFyrcaRhe7GmyvP9
 function setup() {
   const canvas = createCanvas(800, 600);
   canvas.parent('container');
-  noLoop();
+  frameRate(30);
 
   const btnRow = select('#moodButtonsContainer');
   createMoodButton('😊', 'happy', btnRow);
   createMoodButton('😐', 'neutral', btnRow);
   createMoodButton('😠', 'bad', btnRow);
 
+  sleepSlider = select('#sleepSlider');
   regenerateButton = select('#regenerateButton');
-  regenerateButton.mousePressed(redraw);
+  regenerateButton.mousePressed(() => {
+    design = createInitialDesign();
+  });
 
   highlightSelectedButton(mood);
 
   createDreamInput(select('#dreamInputContainer'));
+
+  design = createInitialDesign();
 }
 
 function createMoodButton(label, moodValue, parentDiv) {
@@ -30,6 +42,7 @@ function createMoodButton(label, moodValue, parentDiv) {
   btn.mousePressed(() => {
     mood = moodValue;
     highlightSelectedButton(moodValue);
+    design = createInitialDesign();
     redraw();
   });
   btn.parent(parentDiv);
@@ -48,26 +61,105 @@ function highlightSelectedButton(selectedMood) {
   }
 }
 
-
 function draw() {
-  background(getBackgroundColor());
+  background(255); // clear canvas
+  drawInputImage(); // draw image
 
-  let numShapes;
-  if (mood === 'happy') {
-    numShapes = int(random(15, 30));
-  } else if (mood === 'neutral') {
-    numShapes = int(random(5, 15));
-  } else {
-    numShapes = int(random(30, 70));
+  let bg = getBackgroundColor(); // get mood-tinted background color
+  fill(red(bg), green(bg), blue(bg), 150); // use alpha for soft overlay
+  noStroke();
+  rect(0, 0, width, height); // draw translucent mood overlay
+
+  for (let s of design.shapes) {
+    drawShapeFromData(s);
   }
+
+  mutateDesign(MUTATION_RATE);
+  //drawLines();
+  let sleepQuality = sleepSlider.value();
+  let blurAmt = map(sleepQuality, 0, 100, 10, 0);
+  filter(BLUR, blurAmt);
+}
+
+function createInitialDesign() {
+  let numShapes = mood === 'happy' ? 400 :
+                  mood === 'neutral' ? 500 :
+                  600;
+
+  const shapes = [];
 
   for (let i = 0; i < numShapes; i++) {
-    drawShape();
+    let x = random(width);
+    let y = random(height);
+    let size = random(20, 100);
+
+    // get mood color and image color at (x, y)
+    let moodColor = getColor();
+    let imgColor = loadedImg ? loadedImg.get(floor(x), floor(y)) : moodColor;
+
+    // blend them together
+    let col = lerpColor(moodColor, imgColor, 0.3);
+    col.setAlpha(100); // make it slightly transparent
+
+    shapes.push({
+      x: x,
+      y: y,
+      size: size,
+      shapeType: chooseShape(),
+      col: col,
+      strokeCol: getStrokeColor()
+    });
   }
 
-  drawLines();
-  drawInputImage();
+  return { shapes };
 }
+
+
+
+function mutateDesign(rate) {
+  for (let s of design.shapes) {
+    s.x += random(-rate, rate);
+    s.y += random(-rate, rate);
+
+    // stay fully inside canvas
+    const margin = s.size / 2;
+    s.x = constrain(s.x, margin, width - margin);
+    s.y = constrain(s.y, margin, height - margin);
+
+    s.size += random(-1, 1);
+    s.size = constrain(s.size, 20, 250);
+
+    s.col = s.col.levels.map((c, i) => i < 3 ? constrain(c + random(-5, 5), 0, 255) : c);
+    s.col = color(...s.col);
+  }
+}
+
+function drawShapeFromData(s, fuzziness = 0) {
+  strokeWeight(random(1, 4));
+  stroke(s.strokeCol);
+
+  let c = s.col;
+  fill(c);
+
+  push();
+  let jitterX = random(-fuzziness, fuzziness);
+  let jitterY = random(-fuzziness, fuzziness);
+  translate(s.x + jitterX, s.y + jitterY);
+
+  if (s.shapeType === 'circle') {
+    ellipse(0, 0, s.size, s.size);
+  } else if (s.shapeType === 'rect') {
+    rectMode(CENTER);
+    rect(0, 0, s.size, s.size);
+  } else if (s.shapeType === 'triangle') {
+    triangle(-s.size / 2, s.size / 2, 0, -s.size / 2, s.size / 2, s.size / 2);
+  } else if (s.shapeType === 'jagged') {
+    drawJaggedShape(s.size);
+  }
+
+  pop();
+}
+
 
 function getBackgroundColor() {
   if (detectedColor) {
@@ -95,50 +187,23 @@ function getBackgroundColor() {
   }
 }
 
-function drawShape() {
-  let x = random(width);
-  let y = random(height);
-  let s = random(30, 200);
-  let c = getColor();
-
-  strokeWeight(random(1, 4));
-  stroke(getStrokeColor());
-  fill(c);
-
-  let shapeType = chooseShape();
-
-  push();
-  translate(x, y);
-  if (shapeType === 'circle') {
-    ellipse(0, 0, s, s);
-  } else if (shapeType === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, s, s);
-  } else if (shapeType === 'triangle') {
-    triangle(-s / 2, s / 2, 0, -s / 2, s / 2, s / 2);
-  } else if (shapeType === 'jagged') {
-    drawJaggedShape(s);
-  }
-  pop();
-}
-
 function getColor() {
   if (mood === 'happy') {
-    return color(random(200, 255), random(100, 255), random(100, 255), 180);
+    return color(random(200, 255), random(100, 255), random(100, 255), 100);
   } else if (mood === 'neutral') {
-    return color(random(100, 200), random(100, 200), random(100, 200), 150);
+    return color(random(100, 200), random(100, 200), random(100, 200), 80);
   } else {
-    return color(random(30, 80), random(30, 80), random(30, 80), 150);
+    return color(random(30, 80), random(30, 80), random(30, 80), 100);
   }
 }
 
 function getStrokeColor() {
   if (mood === 'happy') {
-    return color(random(150, 255), random(150, 255), random(150, 255));
+    return color(random(150, 255), 50, random(150, 255), 20, random(150, 255), 10);
   } else if (mood === 'neutral') {
     return color(100);
   } else {
-    return color(random(100), 0, 0);
+    return color(random(100), 0, 10);
   }
 }
 
@@ -302,6 +367,8 @@ function handleDreamInput(text) {
   } else {
     detectedColorDiv.html('No color detected.');
   }
+
+  design = createInitialDesign();
   redraw();
 }
 
@@ -366,14 +433,13 @@ function drawInputImage() {
 
 imageInput.onchange = (e) => {
   const file = e.target.files[0];
-  if (!file) {
-    return;
-  }
+  if (!file) return;
 
   const reader = new FileReader();
   reader.onload = (event) => {
     loadedImg = loadImage(event.target.result, () => {
-      drawInputImage()
+      drawInputImage();
+      design = createInitialDesign();
     });
   };
   reader.readAsDataURL(file);
