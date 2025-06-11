@@ -2,6 +2,7 @@ let mood = 'neutral';
 let regenerateButton;
 let moodButtons = [];
 let loadedImg = null;
+let sleepSlider;
 
 let design = {
   shapes: []
@@ -19,6 +20,7 @@ function setup() {
   createMoodButton('😐', 'neutral', btnRow);
   createMoodButton('😠', 'bad', btnRow);
 
+  sleepSlider = select('#sleepSlider');
   regenerateButton = select('#regenerateButton');
   regenerateButton.mousePressed(() => {
     design = createInitialDesign();
@@ -71,6 +73,9 @@ function draw() {
 
   mutateDesign(MUTATION_RATE);
   //drawLines();
+  let sleepQuality = sleepSlider.value();
+  let blurAmt = map(sleepQuality, 0, 100, 10, 0);
+  filter(BLUR, blurAmt);
 }
 
 function createInitialDesign() {
@@ -126,13 +131,18 @@ function mutateDesign(rate) {
   }
 }
 
-function drawShapeFromData(s) {
+function drawShapeFromData(s, fuzziness = 0) {
   strokeWeight(random(1, 4));
   stroke(s.strokeCol);
-  fill(s.col);
+
+  let c = s.col;
+  fill(c);
 
   push();
-  translate(s.x, s.y);
+  let jitterX = random(-fuzziness, fuzziness);
+  let jitterY = random(-fuzziness, fuzziness);
+  translate(s.x + jitterX, s.y + jitterY);
+
   if (s.shapeType === 'circle') {
     ellipse(0, 0, s.size, s.size);
   } else if (s.shapeType === 'rect') {
@@ -143,8 +153,10 @@ function drawShapeFromData(s) {
   } else if (s.shapeType === 'jagged') {
     drawJaggedShape(s.size);
   }
+
   pop();
 }
+
 
 function getBackgroundColor() {
   if (detectedColor) {
