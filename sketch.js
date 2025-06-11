@@ -2,6 +2,9 @@ let mood = 'neutral';
 let regenerateButton;
 let moodButtons = [];
 let loadedImg = null;
+let settingInputElem;
+
+const PEXELS_API_KEY = "1RC2LuPyLVVGphETNysf8XQWKo5iGWGaSo7CwMcXkFyrcaRhe7GmyvP9";
 
 function setup() {
   const canvas = createCanvas(800, 600);
@@ -224,7 +227,18 @@ const COLORS = {
   grey: [128, 128, 128],
 };
 
-// Create the input area for dream description
+// global handler for Enter key to generate dream
+function handleEnterKey(e) {
+  if (e.key === 'Enter' && (!e.shiftKey || e.target.tagName !== 'TEXTAREA')) {
+    e.preventDefault();
+    if (dreamInputElem && settingInputElem) {
+      handleDreamInput(dreamInputElem.value());
+      handleSettingInput(settingInputElem.value());
+    }
+  }
+}
+
+// Input for dream description
 function createDreamInput(parentDiv) {
   const inputContainer = createDiv().style('margin-top', '20px');
   inputContainer.parent(parentDiv);
@@ -243,12 +257,28 @@ function createDreamInput(parentDiv) {
   detectedColorDiv = createDiv('').style('margin-top', '8px');
   detectedColorDiv.parent(parentDiv);
 
-  dreamInputElem.elt.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleDreamInput(dreamInputElem.value());
-    }
-  });
+  createElement('label', 'Dream setting: ')
+    .attribute('for', 'settingInput')
+    .style('margin-top', '10px')
+    .parent(parentDiv);
+
+  settingInputElem = createInput()
+    .attribute('id', 'settingInput')
+    .attribute('placeholder', 'e.g. forest, city, ocean...')
+    .style('margin-bottom', '8px')
+    .style('margin-top', '10px');
+  settingInputElem.parent(parentDiv);
+
+  createDiv('Press enter to generate dream')
+    .style('margin-bottom', '12px')
+    .style('margin-top', '10px')
+    .style('color', '#fff')
+    .style('font-size', '20px')
+    .parent(parentDiv);
+
+  //event listeners for input for text boxes
+  dreamInputElem.elt.addEventListener('keydown', handleEnterKey);
+  settingInputElem.elt.addEventListener('keydown', handleEnterKey);
 }
 
 //handle the dream input and detect colors
@@ -275,9 +305,60 @@ function handleDreamInput(text) {
   redraw();
 }
 
+//HANDLE INPUT FROM DREAM SETTING 
+function handleSettingInput(setting) {
+  if (!setting || setting.trim() === "") return;
+  fetchSettingImage(setting.trim());
+}
+
+function fetchSettingImage(query) {
+  fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=50`, {
+    headers: {
+      Authorization: PEXELS_API_KEY
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.photos && data.photos.length > 0) {
+        const photo = data.photos[Math.floor(Math.random() * data.photos.length)];
+        loadImage(photo.src.large, img => {
+          loadedImg = img;
+          redraw();
+        });
+      } else {
+        alert("No images found for that setting.");
+      }
+    })
+    .catch(err => {
+      alert("Failed to fetch image for that setting.");
+      console.error("Failed to fetch Pexels image:", err);
+    });
+}
+
 function drawInputImage() {
   if (loadedImg) {
     push();
+    if (detectedColor) {
+      let blendAmt;
+      let alpha;
+      if (mood === 'happy') {
+        blendAmt = 0.9;
+        alpha = 220;
+      } else if (mood === 'neutral') {
+        blendAmt = 0.7;
+        alpha = 215;
+      } else {
+        blendAmt = 0.5;
+        alpha = 210;
+      }
+      let r = lerp(0, detectedColor[0], blendAmt);
+      let g = lerp(0, detectedColor[1], blendAmt);
+      let b = lerp(0, detectedColor[2], blendAmt);
+      tint(r, g, b, alpha);
+    } else {
+      noTint();
+    }
+
     image(loadedImg, 0, 0, 800, 600);
     pop();
   }
@@ -297,3 +378,16 @@ imageInput.onchange = (e) => {
   };
   reader.readAsDataURL(file);
 };
+
+// global event listener to generate dream on Enter anytime youre on the site
+document.addEventListener('keydown', function(e) {
+  const active = document.activeElement;
+  const isInput = active && (
+    active.tagName === 'TEXTAREA' ||
+    (active.tagName === 'INPUT' && active.type === 'text')
+  );
+  // Only trigger if not focused on a text input
+  if (!isInput || (active.tagName === 'TEXTAREA' && e.shiftKey)) {
+    handleEnterKey(e);
+  }
+});
