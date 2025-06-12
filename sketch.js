@@ -89,12 +89,22 @@ function createInitialDesign() {
   const cellWidth = width / cols;
   const cellHeight = height / rows;
 
+  // Get input from dream text
+  let inputText = dreamInputElem ? dreamInputElem.value() : "";
+  let hashValue = simpleHash(inputText);
+
+  // Hash-derived parameters
+  let density = map(hashValue % 1000, 0, 1000, 0.1, 1.0); // shape probability
+  let sizeFactor = map(hashValue % 500, 0, 500, 6, 25);   // shape size range
+
   for (let col = 0; col < cols; col++) {
     for (let row = 0; row < rows; row++) {
+      if (random(1) > density) continue; // skip some cells based on density
+
       const x = col * cellWidth + cellWidth / 2;
       const y = row * cellHeight + cellHeight / 2;
 
-      let imgColor = color(200); // fallback gray
+      let imgColor = color(200);
       if (loadedImg) {
         const imgX = int(map(x, 0, width, 0, loadedImg.width));
         const imgY = int(map(y, 0, height, 0, loadedImg.height));
@@ -110,7 +120,7 @@ function createInitialDesign() {
         y: y,
         homeX: x,
         homeY: y,
-        size: cellWidth * 1.2,
+        size: sizeFactor,
         shapeType: chooseShape(),
         col: finalColor,
         strokeCol: getStrokeColor()
@@ -119,6 +129,16 @@ function createInitialDesign() {
   }
 
   return { shapes };
+}
+
+//Simple hash function for text-input analysis
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Convert to 32bit int
+  }
+  return Math.abs(hash);
 }
 
 function mutateDesign(rate) {
@@ -457,3 +477,5 @@ document.addEventListener('keydown', function(e) {
     handleEnterKey(e);
   }
 });
+
+
