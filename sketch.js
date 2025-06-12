@@ -33,7 +33,8 @@ function setup() {
 
   createDreamInput(select('#dreamInputContainer'));
 
-  design = createInitialDesign();
+  //no generation when page loads
+  //design = createInitialDesign();
 }
 
 function createMoodButton(label, moodValue, parentDiv) {
@@ -63,6 +64,10 @@ function highlightSelectedButton(selectedMood) {
 
 function draw() {
   background(255); // clear canvas
+
+  //ensure no generation when page loads
+  if (design.shapes.length === 0) return;
+
   drawInputImage(); // draw image
 
   let bg = getBackgroundColor(); // get mood-tinted background color
@@ -329,6 +334,10 @@ function handleEnterKey(e) {
   if (e.key === 'Enter' && (!e.shiftKey || e.target.tagName !== 'TEXTAREA')) {
     e.preventDefault();
     if (dreamInputElem && settingInputElem) {
+      if (dreamInputElem.value().trim() === "") {
+        alert("Please enter your dream description.");
+        return;
+      }
       handleDreamInput(dreamInputElem.value());
       handleSettingInput(settingInputElem.value());
     }
@@ -365,13 +374,6 @@ function createDreamInput(parentDiv) {
     .style('margin-bottom', '8px')
     .style('margin-top', '10px');
   settingInputElem.parent(parentDiv);
-
-  createDiv('Press enter to generate dream')
-    .style('margin-bottom', '12px')
-    .style('margin-top', '10px')
-    .style('color', '#fff')
-    .style('font-size', '20px')
-    .parent(parentDiv);
 
   //event listeners for input for text boxes
   dreamInputElem.elt.addEventListener('keydown', handleEnterKey);
