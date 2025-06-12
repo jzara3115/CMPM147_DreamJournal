@@ -82,54 +82,66 @@ function draw() {
 }
 
 function createInitialDesign() {
-  let numShapes = mood === 'happy' ? 400 :
-                  mood === 'neutral' ? 500 :
-                  600;
-
   const shapes = [];
 
-  for (let i = 0; i < numShapes; i++) {
-    let x = random(width);
-    let y = random(height);
-    let size = random(20, 100);
+  const cols = 80;
+  const rows = 60;
+  const cellWidth = width / cols;
+  const cellHeight = height / rows;
 
-    // get mood color and image color at (x, y)
-    let moodColor = getColor();
-    let imgColor = loadedImg ? loadedImg.get(floor(x), floor(y)) : moodColor;
+  for (let col = 0; col < cols; col++) {
+    for (let row = 0; row < rows; row++) {
+      const x = col * cellWidth + cellWidth / 2;
+      const y = row * cellHeight + cellHeight / 2;
 
-    // blend them together
-    let col = lerpColor(moodColor, imgColor, 0.3);
-    col.setAlpha(100); // make it slightly transparent
+      let imgColor = color(200); // fallback gray
+      if (loadedImg) {
+        const imgX = int(map(x, 0, width, 0, loadedImg.width));
+        const imgY = int(map(y, 0, height, 0, loadedImg.height));
+        imgColor = loadedImg.get(imgX, imgY);
+      }
 
-    shapes.push({
-      x: x,
-      y: y,
-      size: size,
-      shapeType: chooseShape(),
-      col: col,
-      strokeCol: getStrokeColor()
-    });
+      const moodColor = getColor();
+      const finalColor = lerpColor(moodColor, imgColor, 0.6);
+      finalColor.setAlpha(200);
+
+      shapes.push({
+        x: x,
+        y: y,
+        homeX: x,
+        homeY: y,
+        size: cellWidth * 1.2,
+        shapeType: chooseShape(),
+        col: finalColor,
+        strokeCol: getStrokeColor()
+      });
+    }
   }
 
   return { shapes };
 }
 
-
-
 function mutateDesign(rate) {
+  let drift;
+  if (mood === 'happy') {
+    drift = 2; // Fast & lively
+  } else if (mood === 'neutral') {
+    drift = 0.6; // Subtle
+  } else {
+    drift = 0.3; // Very slow for 'bad'
+  }
+
   for (let s of design.shapes) {
-    s.x += random(-rate, rate);
-    s.y += random(-rate, rate);
+    // Drift slightly around the original position
+    s.x = s.homeX + random(-drift, drift);
+    s.y = s.homeY + random(-drift, drift);
 
-    // stay fully inside canvas
-    const margin = s.size / 2;
-    s.x = constrain(s.x, margin, width - margin);
-    s.y = constrain(s.y, margin, height - margin);
+    // Subtle size jitter
+    s.size += random(-0.2, 0.2);
+    s.size = constrain(s.size, 5, 25);
 
-    s.size += random(-1, 1);
-    s.size = constrain(s.size, 20, 250);
-
-    s.col = s.col.levels.map((c, i) => i < 3 ? constrain(c + random(-5, 5), 0, 255) : c);
+    // Slight color movement
+    s.col = s.col.levels.map((c, i) => i < 3 ? constrain(c + random(-2, 2), 0, 255) : c);
     s.col = color(...s.col);
   }
 }
@@ -390,6 +402,9 @@ function fetchSettingImage(query) {
         const photo = data.photos[Math.floor(Math.random() * data.photos.length)];
         loadImage(photo.src.large, img => {
           loadedImg = img;
+
+          // ✅ STEP 4: Only generate design after image loads
+          design = createInitialDesign();
           redraw();
         });
       } else {
@@ -406,27 +421,12 @@ function drawInputImage() {
   if (loadedImg) {
     push();
     if (detectedColor) {
-      let blendAmt;
-      let alpha;
-      if (mood === 'happy') {
-        blendAmt = 0.9;
-        alpha = 220;
-      } else if (mood === 'neutral') {
-        blendAmt = 0.7;
-        alpha = 215;
-      } else {
-        blendAmt = 0.5;
-        alpha = 210;
-      }
-      let r = lerp(0, detectedColor[0], blendAmt);
-      let g = lerp(0, detectedColor[1], blendAmt);
-      let b = lerp(0, detectedColor[2], blendAmt);
-      tint(r, g, b, alpha);
+      let [r, g, b] = detectedColor;
+      tint(r, g, b, 80); // apply color tint with alpha
     } else {
-      noTint();
+      tint(255, 40); // default light tint
     }
-
-    image(loadedImg, 0, 0, 800, 600);
+    image(loadedImg, 0, 0, width, height);
     pop();
   }
 }
