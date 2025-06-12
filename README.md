@@ -87,7 +87,7 @@ Try pasting that into the site to see the dreamscape evolve!
 
 ## Screenshots
 
-![Dreamscape Screenshot](assets/Dreamscape .jpg)
+![Dreamscape Screenshot](assets/Dreamscape.jpg)
 
 ---
 
